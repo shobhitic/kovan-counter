@@ -61,7 +61,7 @@
       var contract = null;
       const connect = async () => {
         if (window.ethereum) {
-          // await window.ethereum.send('eth_requestAccounts');
+          await window.ethereum.send('eth_requestAccounts');
           window.w3 = new Web3(window.ethereum);
 
           if (await w3.eth.getChainId() != 42) {
