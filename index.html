@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+    <!-- Primary Meta Tags -->
+    <title>Interact with counter</title>
+    <meta name="title" content="Interact with counter">
+    <meta name="description" content="Increment or decrement a counter on Kovan Network">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shobhitic.github.io/kovan-counter/">
+    <meta property="og:title" content="Interact with counter">
+    <meta property="og:description" content="Increment or decrement a counter on Kovan Network">
+    <!-- <meta property="og:image" content=""> -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="website">
+    <meta property="twitter:url" content="https://shobhitic.github.io/kovan-counter/">
+    <meta property="twitter:title" content="Interact with counter">
+    <meta property="twitter:description" content="Increment or decrement a counter on Kovan Network">
+    <!-- <meta property="twitter:image" content=""> -->
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+        <a class="navbar-brand" href="#">Counter</a>
+        <button id="connect-btn" class="btn btn-primary" onclick="connect()">Connect to MetaMask</button>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="mt-5">
+        <div class="row">
+          <h2 class="mb-3">Increment or Decrement</h2>
+          <hr>
+          <div class="col-lg-6">
+            <h4>Current Value: <span id="current"></span></h4>
+          </div>
+          <div class="col-lg-6">
+            <p><h4>
+              <button id="increment-btn" class="btn btn-success" onclick="increment()" disabled>Increment</button>
+              <button id="decrement-btn" class="btn btn-danger" onclick="decrement()" disabled>Decrement</button>
+            </h4></p>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col">
+          <p>Created by <a href="https://twitter.com/shobhitic">@shobhitic</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var account = null;
+      var contract = null;
+      const connect = async () => {
+        if (window.ethereum) {
+          // await window.ethereum.send('eth_requestAccounts');
+          window.w3 = new Web3(window.ethereum);
+
+          if (await w3.eth.getChainId() != 42) {
+            return alert('Please switch to Kovan chain');
+          }
+
+          var accounts = await w3.eth.getAccounts();
+          account = accounts[0];
+
+          contract = new w3.eth.Contract(ABI, ADDRESS);
+          contract
+          
+          var incrementBtn = document.getElementById('increment-btn')
+          incrementBtn.disabled = false
+
+          var decrementBtn = document.getElementById('decrement-btn')
+          decrementBtn.disabled = false
+
+          var connectBtn = document.getElementById('connect-btn')
+          connectBtn.disabled = true
+          connectBtn.textContent = account.substr(0, 6) + "..." + account.substr(38)
+
+          getCurrent()
+        } else {
+          alert('Metamask not detected')
+        }
+      }
+
+      const increment = async (e) => {
+        // e.preventDefault()
+        if (contract) {
+          await contract.methods.increment().send({ from: account })
+          getCurrent()
+        }
+      }
+
+      const decrement = async (e) => {
+        // e.preventDefault();
+        if (contract) {
+          await contract.methods.decrement().send({ from: account })
+          getCurrent()
+        }
+      }
+
+      const getCurrent = async () => {
+        var value = await contract.methods.count().call()
+        document.getElementById('current').textContent = value;
+      }
+
+      const ABI = [{"inputs":[],"name":"count","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decrement","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"increment","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"nonpayable","type":"function"}]
+      const ADDRESS = "0xa865d651ec9cdb7107e509be8b44373bd77d39c6"
+    </script>
+  </body>
+</html>
